@@ -28,28 +28,44 @@ func CreatePost(c *fiber.Ctx) error {
 		})
 	}
 
+	if len(posts.TagsID) == 0 {
+		return c.Status(400).JSON(fiber.Map{
+			"err": "tags_id is required",
+		})
+	}
+
+
 	newPost := models.Post{
 		Title : posts.Title,
 		Description: posts.Description,
 		UserID: posts.UserID,
+		TagsID: posts.TagsID,
 	}
 
-	errCreatePost := database.Db.Create(&newPost).Error
+	errCreatePost := database.Db.Debug().Create(&newPost).Error
 	if errCreatePost != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"message": "gagal menyimpan data" + errCreatePost.Error(),
 		})
 	}
+
+	for _, tagID := range newPost.TagsID {
+		postTag := new(models.PostTag)
+		postTag.PostID = newPost.ID
+		postTag.TagID = tagID
+		database.Db.Create(&postTag)
+	}
+
 	//if succeed
 	return c.JSON(fiber.Map{
 		"message" : "success",
-		"data": newPost,
+		"posts": newPost,
 	})
 }
 
 func GetAllPost(c *fiber.Ctx) error  {
-	var posts []models.Post
-	result := database.Db.Preload("User").Find(&posts)
+	var posts []models.PostResponseWithTags
+	result := database.Db.Preload("User").Preload("Tag").Find(&posts)
 	if result.Error != nil {
 		log.Println(result.Error)
 	}

@@ -56,7 +56,7 @@ func UserRegister(c *fiber.Ctx) error {
 	//if succeed
 	return c.JSON(fiber.Map{
 		"message" : "success",
-		"data": newUser,
+		"users": newUser,
 	})
 }
 
