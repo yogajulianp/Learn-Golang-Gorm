@@ -46,8 +46,8 @@ func CreateTag(c *fiber.Ctx) error {
 }
 
 func GetAllTag(c *fiber.Ctx) error  {
-	var tags []models.Tag
-	result := database.Db.Find(&tags)
+	var tags []models.TagResponseWithPost
+	result := database.Db.Debug().Preload("Posts").Find(&tags)
 	if result.Error != nil {
 		log.Println(result.Error)
 	}

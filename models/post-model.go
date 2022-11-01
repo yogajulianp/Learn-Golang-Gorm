@@ -29,7 +29,13 @@ type PostResponseWithTags struct {
 	UserID 		int 		`json:"-" form:"user_id" `
 	User		 UserResponse 	`json:"user"`
 	Tag			[]Tag		`json:"tags" gorm:"many2many:post_tags;ForeignKey:ID;joinForeignKey:PostID;References:ID;joinReferences:TagID"`
-	
+}
+
+type PostResponseNoUser struct{
+	ID 			int 		`json:"id" form:"id" `
+	Title 		string  	`json:"title" form:"title" `
+	Description	 string  	`form:"description" json:"description"  `
+	UserID 		int 		`json:"-" form:"user_id" `
 }
 
 func (PostResponse) TableName() string {
@@ -37,5 +43,9 @@ func (PostResponse) TableName() string {
 }
 
 func (PostResponseWithTags) TableName() string {
+	return "posts"
+}
+
+func (PostResponseNoUser) TableName() string {
 	return "posts"
 }
